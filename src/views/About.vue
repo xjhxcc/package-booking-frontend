@@ -7,8 +7,8 @@
   >
     <a-form-item
       label="运单号"
-      :label-col="{ span: 5 }"
-      :wrapper-col="{ span: 12 }"
+      :label-col="{ span: 10 }"
+      :wrapper-col="{ span: 5 }"
     >
       <a-input
         v-decorator="[
@@ -17,10 +17,16 @@
         ]"
       />
     </a-form-item>
+    <!-- <DatePicker
+      format="YYYY-MM-DD HH:mm:ss"
+      disabledDate={disabledDate}
+      disabledTime={disabledDateTime}
+      showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+    /> -->
     <a-form-item
       label="预约时间"
-      :label-col="{ span: 5 }"
-      :wrapper-col="{ span: 12 }"
+      :label-col="{ span: 10 }"
+      :wrapper-col="{ span: 5 }"
     >
       <a-input
         v-decorator="[
