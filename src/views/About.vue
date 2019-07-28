@@ -1,76 +1,77 @@
 <template>
-  <div class="about">
-    
-  <a-form
-    :form="form"
-    @submit="handleSubmit"
-  >
-    <a-form-item
-      label="运单号"
-      :label-col="{ span: 10 }"
-      :wrapper-col="{ span: 5 }"
-    >
-      <a-input
-        v-decorator="[
-          'packageId',
-          {rules: [{ required: true, message: 'Please input your packageId!' }]}
-        ]"
-      />
-    </a-form-item>
-    <!-- <DatePicker
-      format="YYYY-MM-DD HH:mm:ss"
-      disabledDate={disabledDate}
-      disabledTime={disabledDateTime}
-      showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-    /> -->
-    <a-form-item
-      label="预约时间"
-      :label-col="{ span: 10 }"
-      :wrapper-col="{ span: 5 }"
-    >
-      <a-input
-        v-decorator="[
-          'preTime',
-          {rules: [{ required: true, message: 'Please input your preTime!' }]}
-        ]"
-      />
-    </a-form-item>
-    <a-form-item
-      :wrapper-col="{ span: 12, offset: 5 }"
-    >
-      <a-button
-        type="primary"
-        html-type="submit"
-      >
-        预约
-      </a-button>
-    </a-form-item>
-  </a-form>
+  <div align="center">
+    <a-form :form="form" @submit="preedSubmit">
+      <a-form-item label="包裹单号:" :label-col="{ span: 11 }" :wrapper-col="{ span: 3 }">
+        <a-input
+          v-decorator="[
+ 'packageId',
+ {rules: [{ required: true, message: 'Please input your packageId!' }]}
+ ]"
+        />
+      </a-form-item>
+      <a-form-item label="预约时间:" :label-col="{ span: 11 }" :wrapper-col="{ span: 2 }">
+        <a-date-picker
+          v-decorator="['date-time-picker', config]"
+          show-time
+          format="YYYY-MM-DD HH:mm:ss"
+        />
+      </a-form-item>
+      <a-form-item>
+        <a-button type="primary" html-type="submit">预约</a-button>
+        <a-button type="primary" html-type="submit">取消</a-button>
+      </a-form-item>
+    </a-form>
   </div>
 </template>
 <script>
 export default {
-  data(){
-    return{
-      formLayout: 'horizontal',
-      form: this.$form.createForm(this)
-    }
+  data() {
+    return {
+      config: {
+        rules: [
+          { type: "object", required: true, message: "Please select time!" }
+        ]
+      }
+    };
   },
-  methods:{
-    handleSubmit (e) {
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
+  },
+  methods: {
+    preedSubmit(e) {
       e.preventDefault();
-      this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log('Received values of form: ', values);
+      this.form.validateFields((err, fieldsValue) => {
+        if (err) {
+          return;
         }
-      });
-    },
-    handleSelectChange (value) {
-      console.log(value);
-      this.form.setFieldsValue({
-        note: `Hi, ${value === 'male' ? 'man' : 'lady'}!`,
+        const values = {
+          ...fieldsValue,
+          "date-time-picker": fieldsValue["date-time-picker"].format(
+            "YYYY-MM-DD HH:mm:ss"
+          )
+        };
+        if (
+          fieldsValue["date-time-picker"].format("HHmmss") < 90000 ||
+          fieldsValue["date-time-picker"].format("HHmmss") > 200000
+        ) {
+          alert("【预约失败】取件时间：9点——20点");
+          return;
+        }
+        this.axios
+          .patch(
+            "http://localhost:8088/packageOrders/preTime/" +
+              values["date-time-picker"] +
+              "/" +
+              values["packageId"]
+          )
+          .then(response => {
+            console.log(response);
+            response.data === 1
+              ? alert("预约成功")
+              : alert("预约失败!请检查包裹单号是否有误！");
+          });
       });
     }
   }
-}
+};
 </script>

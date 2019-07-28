@@ -153,7 +153,7 @@ export default {
                   packageId: packageId,
                   username: username,
                   tel: tel,
-                  packageStatus: 1,
+                  packageStatus: 3,
                   preTime: ""
                 },
                 "application/json"
@@ -231,7 +231,7 @@ export default {
   },
   updateStatus(){
     let packageId = fieldsValue["packageId"];
-    this.axios.patch("http://localhost:8088/packageOrders/packageStatus/2/"+packageId).then(response => {
+    this.axios.patch("http://localhost:8088/packageOrders/packageStatus"+packageId).then(response => {
         console.log( response.data);
     });
   }
